@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard MTCL2026 - Quảng Ngãi</title>
+<script>__CHARTJS__</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,Arial,sans-serif}
+body{background:#eef2f7;color:#1f2d3d}
+.wrap{max-width:1280px;margin:0 auto;padding:18px}
+header{background:linear-gradient(120deg,#0b3d91,#1565c0);color:#fff;border-radius:14px;padding:22px 26px;box-shadow:0 8px 24px rgba(11,61,145,.25)}
+header h1{font-size:24px;letter-spacing:.3px}
+header .sub{opacity:.9;margin-top:6px;font-size:14px}
+header .badge{display:inline-block;background:rgba(255,255,255,.18);padding:4px 12px;border-radius:20px;font-size:12px;margin-top:10px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}
+.card{background:#fff;border-radius:12px;padding:16px 18px;box-shadow:0 4px 14px rgba(0,0,0,.06);border-left:5px solid #1565c0}
+.card.bad{border-left-color:#e53935}.card.ok{border-left-color:#2e7d32}.card.warn{border-left-color:#f9a825}
+.card .lbl{font-size:12.5px;color:#607089;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.card .val{font-size:30px;font-weight:800;margin:6px 0 2px}
+.card .tg{font-size:12px;color:#8494a8}
+.card .st{font-size:12px;font-weight:700;padding:2px 9px;border-radius:12px;display:inline-block;margin-top:4px}
+.st.bad{background:#fdecea;color:#c62828}.st.ok{background:#e8f5e9;color:#2e7d32}
+.tabs{display:flex;gap:8px;margin:8px 0 0;flex-wrap:wrap}
+.tab{background:#fff;border:none;padding:11px 20px;border-radius:10px 10px 0 0;font-size:14px;font-weight:700;color:#607089;cursor:pointer;box-shadow:0 -2px 8px rgba(0,0,0,.04)}
+.tab.active{background:#1565c0;color:#fff}
+.panel{background:#fff;border-radius:0 12px 12px 12px;padding:22px;box-shadow:0 4px 14px rgba(0,0,0,.06);display:none}
+.panel.active{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid3{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+.chartbox{background:#fafbfd;border:1px solid #eaeef3;border-radius:10px;padding:14px}
+.chartbox h3{font-size:14px;color:#0b3d91;margin-bottom:10px;font-weight:700}
+.chartbox .cw{position:relative;height:280px}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+th,td{padding:7px 8px;text-align:center;border-bottom:1px solid #eef2f7}
+th{background:#0b3d91;color:#fff;position:sticky;top:0;font-weight:600}
+td.l,th.l{text-align:left}
+tr:nth-child(even){background:#f7f9fc}
+.tag{padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+.tag.dat{background:#e8f5e9;color:#2e7d32}.tag.kd{background:#fdecea;color:#c62828}
+.tag.on{background:#fff3e0;color:#e65100}
+.scroll{max-height:420px;overflow:auto;border:1px solid #eaeef3;border-radius:10px}
+h2.sec{font-size:16px;color:#0b3d91;margin:4px 0 12px}
+.note{font-size:12px;color:#8494a8;margin-top:10px;line-height:1.5}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.mini .c{background:linear-gradient(135deg,#1565c0,#1e88e5);color:#fff;border-radius:11px;padding:14px}
+.mini .c.r{background:linear-gradient(135deg,#c62828,#e53935)}
+.mini .c.o{background:linear-gradient(135deg,#ef6c00,#fb8c00)}
+.mini .c.g{background:linear-gradient(135deg,#2e7d32,#43a047)}
+.mini .c .v{font-size:26px;font-weight:800}.mini .c .l{font-size:12px;opacity:.92;margin-top:3px}
+footer{text-align:center;color:#8494a8;font-size:12px;margin:20px 0}/* ===== Tối ưu hiển thị trên điện thoại ===== */
+@media (max-width:640px){
+  .wrap{padding:10px}
+  header{padding:16px;border-radius:12px}
+  header h1{font-size:18px;line-height:1.25}
+  header .sub{font-size:12px}
+  header .badge{font-size:11px;padding:3px 9px}
+  #btnUpdate{width:100%;padding:12px}
+  .cards{grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+  .card{padding:12px}
+  .card .val{font-size:23px}
+  .tabs{gap:6px}
+  .tab{flex:1 1 auto;padding:10px 8px;font-size:12.5px;border-radius:9px;text-align:center}
+  .panel{padding:14px;border-radius:12px}
+  .grid2,.grid3{grid-template-columns:1fr;gap:12px}
+  .chartbox{padding:10px}
+  .chartbox .cw{height:230px !important}
+  .mini{grid-template-columns:1fr 1fr;gap:10px}
+  .mini .c{padding:12px}
+  .mini .c .v{font-size:22px}
+  .scroll table{min-width:540px}
+  th,td{padding:6px}
+  h2.sec{font-size:14px}
+}
+@media (max-width:380px){
+  .cards,.mini{grid-template-columns:1fr}
+}
+</style></head>
+<body><div class="wrap">
+<header>
+<h1>DASHBOARD MTCL2026 &mdash; QUẢNG NGÃI</h1>
+<div class="sub">Chỉ tiêu chất lượng mạng lưới &bull; Type III.3 &bull; Kỳ báo cáo: 01/09 &ndash; 20/09/2026 (lũy kế tháng 09)</div>
+<span class="badge">Nguồn: sMartF MobiFone + DS_MS online</span>
+<span class="badge" style="background:rgba(255,255,255,.28);font-weight:700">📅 Số liệu tính đến: __GENTS__</span>
+<div style="margin-top:14px">
+<button id="btnUpdate" style="background:#fff;color:#0b3d91;border:none;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.18)">🔄 Cập nhật dữ liệu</button>
+</div>
+<div id="updBox" style="display:none;margin-top:14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:14px 16px;font-size:13.5px;line-height:1.6">
+<b>Trang báo cáo này là bản chụp dữ liệu tại thời điểm đã ghi ở trên.</b><br>
+Để có bản mới nhất, người phụ trách (có tài khoản sMartF) cần cập nhật rồi chia sẻ lại file. Người phụ trách gửi câu sau cho trợ lý:
+<div style="background:#fff;color:#0b3d91;border-radius:8px;padding:10px 12px;margin:8px 0;font-weight:700;user-select:all" id="updMsg">Cập nhật báo cáo MTCL2026 Quảng Ngãi tại thời điểm hiện tại</div>
+<span id="updHint" style="opacity:.9">Lưu ý: không nhập tài khoản/mật khẩu trực tiếp lên trang chia sẻ này — tài khoản chỉ dùng phía người phụ trách để đảm bảo an toàn.</span>
+</div>
+</header>
+<div id="topcards" class="cards"></div>
+<div class="tabs">
+<button class="tab active" data-t="1">📈 KPI theo ngày</button>
+<button class="tab" data-t="2">📊 Lũy kế tháng 09</button>
+<button class="tab" data-t="3">📡 Báo cáo mất sóng</button>
+</div>
+<div class="panel active" id="p1">
+<div class="grid2">
+<div class="chartbox"><h3>MTCL_2026 theo ngày (ngưỡng ≥95,5)</h3><div class="cw"><canvas id="cMtcl"></canvas></div></div>
+<div class="chartbox"><h3>Tỷ lệ Xã/Phường đạt MTCL (ngưỡng ≥94%)</h3><div class="cw"><canvas id="cXa"></canvas></div></div>
+<div class="chartbox"><h3>MLL_TIME theo ngày (phút, ngưỡng ≤41,24)</h3><div class="cw"><canvas id="cMll"></canvas></div></div>
+<div class="chartbox"><h3>Thành phần HTMT (KPI/QOS/VHKT)</h3><div class="cw"><canvas id="cHtmt"></canvas></div></div>
+</div>
+<h2 class="sec" style="margin-top:20px">Chi tiết KPI theo ngày</h2>
+<div class="scroll"><table id="tDay"></table></div>
+</div>
+<div class="panel" id="p2">
+<div id="mmini" class="mini"></div>
+<div class="grid2">
+<div class="chartbox"><h3>Thành phần đánh giá lũy kế tháng 09</h3><div class="cw"><canvas id="cRadar"></canvas></div></div>
+<div class="chartbox"><h3>So sánh với ngưỡng Type III.3</h3><div class="cw"><canvas id="cBar2"></canvas></div></div>
+</div>
+<div class="note" id="mnote"></div>
+</div>
+<div class="panel" id="p3">
+<div id="msmini" class="mini"></div>
+<div class="grid2">
+<div class="chartbox"><h3>Top trạm mất liên lạc kéo dài nhất (phút)</h3><div class="cw" style="height:340px"><canvas id="cLong"></canvas></div></div>
+<div class="chartbox"><h3>Top trạm có số lần mất sóng nhiều nhất</h3><div class="cw" style="height:340px"><canvas id="cFreq"></canvas></div></div>
+<div class="chartbox"><h3>Nguyên nhân mất sóng</h3><div class="cw"><canvas id="cCause"></canvas></div></div>
+<div class="chartbox"><h3>Phân bổ theo lớp mạng</h3><div class="cw"><canvas id="cNet"></canvas></div></div>
+</div>
+<h2 class="sec" style="margin-top:20px">🔴 Trạm đang mất liên lạc (chưa khôi phục)</h2>
+<div class="scroll" style="max-height:220px"><table id="tOn"></table></div>
+<h2 class="sec" style="margin-top:18px">Chi tiết top trạm mất sóng nhiều</h2>
+<div class="scroll"><table id="tFreq"></table></div>
+<div class="note">Dữ liệu mất sóng lấy từ sheet <b>DS_MS online ngày</b> (Google Sheets) &bull; lọc tỉnh Quảng Ngãi &bull; ảnh chụp thời điểm 21/09/2026. Đơn vị thời gian: phút.</div>
+</div>
+<footer>Dashboard MTCL2026 Quảng Ngãi (Type III.3) &bull; Tạo tự động từ sMartF &amp; DS_MS online</footer>
+</div>
+<script>
+const D=__DATA__;
+</script>
+<script src="app.js"></script>
+</body></html>

@@ -1,0 +1,36 @@
+name: sMartF daily KPI
+
+on:
+  schedule:
+    # 02:00 UTC = 09:00 gio Viet Nam (UTC+7). GitHub cron chay theo UTC.
+    - cron: "0 2 * * *"
+  workflow_dispatch: {}     # cho phep bam chay tay tu tab Actions
+
+permissions:
+  contents: write            # de commit data/kpi.json
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Cai dat phu thuoc + Chromium
+        run: |
+          pip install playwright pandas openpyxl
+          python -m playwright install --with-deps chromium
+      - name: Lay sMartF va dung kpi.json
+        env:
+          SMARTF_USER: ${{ secrets.SMARTF_USER }}
+          SMARTF_PASS: ${{ secrets.SMARTF_PASS }}
+        run: python scripts/build_kpi.py
+      - name: Commit ket qua
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/kpi.json
+          git commit -m "update kpi $(date +%F)" || echo "khong co thay doi"
+          git pull --rebase origin main
+          git push
