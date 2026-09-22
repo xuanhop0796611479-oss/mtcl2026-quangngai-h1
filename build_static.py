@@ -51,7 +51,17 @@ def main():
     # vendor chart.js: build_outputs tìm lib/vendor/chart.umd.min.js -> copy từ static
     vend = os.path.join(LIB, 'vendor'); os.makedirs(vend, exist_ok=True)
     import shutil
-    shutil.copy(os.path.join(HERE, 'static', 'chart.umd.min.js'), os.path.join(vend, 'chart.umd.min.js'))
+    _chart_src = os.path.join(HERE, 'static', 'chart.umd.min.js')
+    _chart_dst = os.path.join(vend, 'chart.umd.min.js')
+    if os.path.exists(_chart_src):
+        shutil.copy(_chart_src, _chart_dst)
+    else:
+        # Không tìm thấy file thư viện biểu đồ trong repo -> tự tải từ CDN
+        print('[!] Thiếu static/chart.umd.min.js -> tải Chart.js từ CDN...')
+        import urllib.request
+        _cdn = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js'
+        urllib.request.urlretrieve(_cdn, _chart_dst)
+        print('[OK] đã tải Chart.js về', _chart_dst)
     gen_ts = (datetime.datetime.utcnow() + datetime.timedelta(hours=7)).strftime('%d/%m/%Y %H:%M') + ' (giờ VN)'
     out_html = os.path.join(OUT_DIR, 'index.html')
     build_outputs.build_dashboard(daily, monthly, ms, out_html, gen_ts=gen_ts)
