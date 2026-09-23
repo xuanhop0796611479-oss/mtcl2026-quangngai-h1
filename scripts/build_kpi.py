@@ -35,20 +35,42 @@ def main():
     fetch_smartf.run(user, pw, day, month, frm, to)
     daily, monthly = build_outputs.extract_kpi(day, month)
 
+    # --- Giu lai du lieu cu neu lan lay moi khong co ket qua ---
+    # (tranh viec chay workflow ghi de xoa trang tab Xa/phuong & Cell 4G)
+    prev = {}
+    prev_path = data_dir / "kpi.json"
+    if prev_path.exists():
+        try:
+            prev = json.loads(prev_path.read_text(encoding="utf-8"))
+        except Exception as e:
+            print("[!] Khong doc duoc kpi.json cu:", repr(e))
+
     # --- 2 bao cao bo sung: xa/phuong chua dat + cell 4G luu luong = 0 ---
     # Neu 1 phan loi thi van giu duoc du lieu chinh (khong lam sap pipeline).
-    xa_fail, xa_date = [], ""
-    cell4g, g4_date = {"list": [], "summary": {"total": 0, "zero": 0}}, ""
+    xa_fail = prev.get("xa_fail") or []
+    xa_date = prev.get("xa_date") or ""
+    cell4g = prev.get("cell4g") or {"list": [], "summary": {"total": 0, "zero": 0}}
+    g4_date = prev.get("cell4g_date") or ""
     try:
         got = fetch_smartf.run_extra(user, pw, xa, g4, yd, yd)
         if got.get("xa") and os.path.exists(xa):
-            xa_fail, xa_date = build_outputs.extract_xa_fail(xa)
-            print("[OK] xa/phuong chua dat:", len(xa_fail), "| ngay:", xa_date)
+            nf, nd = build_outputs.extract_xa_fail(xa)
+            # chi ghi de khi lay duoc du lieu that su
+            if nf:
+                xa_fail, xa_date = nf, nd
+                print("[OK] xa/phuong chua dat:", len(xa_fail), "| ngay:", xa_date)
+            else:
+                print("[i] Lan lay moi 0 xa/phuong -> giu du lieu cu:", len(xa_fail))
         if got.get("g4") and os.path.exists(g4):
-            cell4g, g4_date = build_outputs.extract_4g_zero(g4)
-            print("[OK] cell 4G luu luong=0:", cell4g["summary"], "| ngay:", g4_date)
+            ng4, ngd = build_outputs.extract_4g_zero(g4)
+            if ng4.get("list"):
+                cell4g, g4_date = ng4, ngd
+                print("[OK] cell 4G luu luong=0:", cell4g["summary"], "| ngay:", g4_date)
+            else:
+                print("[i] Lan lay moi 0 cell 4G -> giu du lieu cu:",
+                      (cell4g.get("summary") or {}))
     except Exception as e:
-        print("[!] Loi khi lay 2 bao cao bo sung:", repr(e))
+        print("[!] Loi khi lay 2 bao cao bo sung -> giu du lieu cu:", repr(e))
 
     payload = {
         "daily": daily,
