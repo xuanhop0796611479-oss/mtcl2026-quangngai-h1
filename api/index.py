@@ -17,8 +17,8 @@ def _load_kpi():
     p = ROOT / "data" / "kpi.json"
     if p.exists():
         d = json.loads(p.read_text(encoding="utf-8"))
-        return d.get("daily", []), d.get("monthly")
-    return [], None
+        return d
+    return {}
 
 
 def _download_csv():
@@ -55,9 +55,17 @@ def _inject_head(html):
 def _render_html():
     csv = _download_csv()
     ms = fetch_sheet.analyze(csv)
-    daily, monthly = _load_kpi()
+    kpi = _load_kpi()
+    daily = kpi.get("daily", [])
+    monthly = kpi.get("monthly")
     out = "/tmp/dashboard.html"
-    build_outputs.build_dashboard(daily, monthly, ms, out)
+    build_outputs.build_dashboard(
+        daily, monthly, ms, out,
+        xa_fail=kpi.get("xa_fail", []),
+        cell4g=kpi.get("cell4g", {}),
+        xa_date=kpi.get("xa_date", ""),
+        cell4g_date=kpi.get("cell4g_date", ""),
+    )
     html = Path(out).read_text(encoding="utf-8")
     return _inject_head(html)
 

@@ -87,3 +87,19 @@ nao (PC hay dien thoai) cung xem duoc; trang tu tai lai moi 15 phut.
 - Neu khong muon dung GitHub Actions, ban co the chay `scripts/build_kpi.py`
   tren 1 may bat kem (cron 9h sang) roi commit/push `data/kpi.json` len repo -
   ket qua tuong duong.
+
+## Cap nhat v2: them 2 tab moi
+
+Dashboard nay da bo sung 2 tab:
+- **Tab "Xa/phuong chua dat"**: danh sach xa/phuong KHONG DAT MTCL2026 cua
+  ngay lien truoc (hom qua). Nguon: sMartF > MTCL > 2026_V2 > PHUONG_XA > NGAY,
+  loc tinh Quang Ngai, Danh gia = KHONG DAT.
+- **Tab "Cell 4G luu luong = 0"**: danh sach cell 4G co TRAFFIC_4G (MB) = 0.
+  Nguon: sMartF > ran4g > EUTrancell > General, loc tinh Quang Ngai.
+
+Hai bao cao nay do `scripts/build_kpi.py` tu dong lay them moi sang (goi
+`fetch_smartf.run_extra(...)`) va ghi vao `data/kpi.json` (cac khoa
+`xa_fail`, `xa_date`, `cell4g`, `cell4g_date`). Neu 1 trong 2 bao cao loi thi
+pipeline VAN giu duoc KPI ngay/thang - tab tuong ung chi hien "chua lay duoc
+du lieu" cho lan chay sau.
+

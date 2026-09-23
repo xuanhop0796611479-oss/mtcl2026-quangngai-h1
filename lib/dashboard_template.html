@@ -96,6 +96,8 @@ footer{text-align:center;color:#8494a8;font-size:12px;margin:20px 0}/* ===== T�
 <button class="tab active" data-t="1">📈 KPI theo ngày</button>
 <button class="tab" data-t="2">📊 Lũy kế tháng 09</button>
 <button class="tab" data-t="3">📡 Báo cáo mất sóng</button>
+<button class="tab" data-t="4">🚫 Xã/phường chưa đạt</button>
+<button class="tab" data-t="5">📶 Cell 4G lưu lượng = 0</button>
 </div>
 <div class="panel active" id="p1">
 <div class="grid2">
@@ -128,6 +130,26 @@ footer{text-align:center;color:#8494a8;font-size:12px;margin:20px 0}/* ===== T�
 <h2 class="sec" style="margin-top:18px">Chi tiết top trạm mất sóng nhiều</h2>
 <div class="scroll"><table id="tFreq"></table></div>
 <div class="note">Dữ liệu mất sóng lấy từ sheet <b>DS_MS online ngày</b> (Google Sheets) &bull; lọc tỉnh Quảng Ngãi &bull; ảnh chụp thời điểm 21/09/2026. Đơn vị thời gian: phút.</div>
+</div>
+<div class="panel" id="p4">
+<div id="xamini" class="mini"></div>
+<div class="grid2">
+<div class="chartbox"><h3>Top xã/phường có MTCL_2026 thấp nhất</h3><div class="cw" style="height:340px"><canvas id="cXaFail"></canvas></div></div>
+<div class="chartbox"><h3>Thành phần HTMT trung bình (xã chưa đạt)</h3><div class="cw"><canvas id="cXaRadar"></canvas></div></div>
+</div>
+<h2 class="sec" style="margin-top:20px">🚫 Danh sách xã/phường CHƯA ĐẠT MTCL2026 &mdash; ngày <span id="xaDate">-</span></h2>
+<div class="scroll"><table id="tXaFail"></table></div>
+<div class="note">Nguồn: sMartF &bull; MTCL &gt; 2026_V2 &gt; PHƯỜNG_XÃ &gt; NGÀY &bull; lọc tỉnh Quảng Ngãi, Đánh giá = KHÔNG ĐẠT &bull; số liệu của ngày liền trước.</div>
+</div>
+<div class="panel" id="p5">
+<div id="g4mini" class="mini"></div>
+<div class="grid2">
+<div class="chartbox"><h3>Tỷ lệ cell 4G có lưu lượng = 0</h3><div class="cw"><canvas id="cG4Pie"></canvas></div></div>
+<div class="chartbox"><h3>Số cell lưu lượng = 0 theo xã/phường</h3><div class="cw" style="height:340px"><canvas id="cG4Xa"></canvas></div></div>
+</div>
+<h2 class="sec" style="margin-top:20px">📶 Danh sách cell 4G có TRAFFIC_4G (MB) = 0</h2>
+<div class="scroll"><table id="tG4"></table></div>
+<div class="note">Nguồn: sMartF &bull; ran4g &gt; EUTrancell &gt; General &bull; lọc tỉnh Quảng Ngãi, TRAFFIC_4G (MB) = 0.</div>
 </div>
 <footer>Dashboard MTCL2026 Quảng Ngãi (Type III.3) &bull; Tạo tự động từ sMartF &amp; DS_MS online</footer>
 </div>
