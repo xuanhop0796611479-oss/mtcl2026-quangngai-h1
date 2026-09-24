@@ -31,12 +31,7 @@ def main():
     to = "%d/%d/%d" % (today.month, today.day, today.year)
     yd = "%d/%d/%d" % (yday.month, yday.day, yday.year)   # ngay lien truoc (M/D/YYYY)
 
-    # --- Bao cao chinh (NGAY + THANG) cap tinh ---
-    fetch_smartf.run(user, pw, day, month, frm, to)
-    daily, monthly = build_outputs.extract_kpi(day, month)
-
-    # --- Giu lai du lieu cu neu lan lay moi khong co ket qua ---
-    # (tranh viec chay workflow ghi de xoa trang tab Xa/phuong & Cell 4G)
+    # --- Doc du lieu cu TRUOC (de con giu lai neu lan lay moi that bai) ---
     prev = {}
     prev_path = data_dir / "kpi.json"
     if prev_path.exists():
@@ -44,6 +39,22 @@ def main():
             prev = json.loads(prev_path.read_text(encoding="utf-8"))
         except Exception as e:
             print("[!] Khong doc duoc kpi.json cu:", repr(e))
+
+    # --- Bao cao chinh (NGAY + THANG) cap tinh ---
+    # Neu dang nhap/tai trang that bai (vd server GitHub khong vao duoc sMartF),
+    # KHONG lam sap job: giu lai du lieu ngay/thang cu de dashboard van co so.
+    daily = prev.get("daily") or []
+    monthly = prev.get("monthly")
+    try:
+        fetch_smartf.run(user, pw, day, month, frm, to)
+        ndaily, nmonthly = build_outputs.extract_kpi(day, month)
+        if ndaily:
+            daily, monthly = ndaily, nmonthly
+            print("[OK] bao cao NGAY/THANG:", len(daily), "ngay.")
+        else:
+            print("[i] Lan lay moi 0 dong NGAY -> giu du lieu cu:", len(daily), "ngay.")
+    except Exception as e:
+        print("[!] Khong lay duoc bao cao chinh -> giu du lieu cu:", repr(e))
 
     # --- 2 bao cao bo sung: xa/phuong chua dat + cell 4G luu luong = 0 ---
     # Neu 1 phan loi thi van giu duoc du lieu chinh (khong lam sap pipeline).

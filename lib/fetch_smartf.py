@@ -124,12 +124,31 @@ def _export_excel(page, fr, out_path):
     di.value.save_as(out_path)
 
 
+def _goto_retry(p, url, tries=4, timeout=120000):
+    """Mo trang co retry: sMartF doi khi tai rat cham tu server ngoai VN.
+    Thu nhieu lan, noi long dieu kien cho tai (commit -> domcontentloaded -> load)."""
+    waits = ["commit", "domcontentloaded", "load", "domcontentloaded"]
+    last = None
+    for i in range(tries):
+        try:
+            p.goto(url, timeout=timeout, wait_until=waits[i % len(waits)])
+            return True
+        except Exception as e:
+            last = e
+            print("[i] Thu mo lai trang (lan %d/%d): %s" % (i + 1, tries, url))
+            time.sleep(5)
+    raise RuntimeError(
+        "Khong mo duoc trang sMartF sau %d lan thu (%s). "
+        "Rat co the server GitHub khong truy cap duoc he thong sMartF noi bo MobiFone. "
+        "Loi goc: %r" % (tries, url, last))
+
+
 def _login(p, user, password):
-    p.goto(LOGIN, timeout=60000, wait_until="domcontentloaded"); time.sleep(4)
+    _goto_retry(p, LOGIN); time.sleep(4)
     p.fill("input[name=username]", user)
     p.fill("input[name=password]", password)
     p.click("button:has-text('\u0110\u0103ng nh\u1eadp')"); time.sleep(8)
-    p.goto(REPORT, timeout=60000, wait_until="domcontentloaded"); time.sleep(10)
+    _goto_retry(p, REPORT); time.sleep(10)
     if "auth/login" in p.url and p.query_selector("input[name=username]"):
         raise RuntimeError("Dang nhap sMartF that bai - kiem tra tai khoan/mat khau.")
 
@@ -147,7 +166,7 @@ def run(user, password, out_day, out_month, from_date, to_date, province="Quang 
         fr.click("#ReportViewerControl_ctl04_ctl00"); time.sleep(6); _wait_render(fr); time.sleep(4)
         _export_excel(p, fr, out_day)
         print("[OK] da xuat bao cao NGAY:", out_day)
-        p.goto(REPORT, timeout=60000, wait_until="domcontentloaded"); time.sleep(10)
+        _goto_retry(p, REPORT); time.sleep(10)
         fr=_open_mtcl_leaf(p, ["T\u1ec8NH_TH\u00c0NH PH\u1ed0","T\u1ec8NH_TH\u00c0NH"], "TH\u00c1NG"); time.sleep(2)
         fr.click("#ReportViewerControl_ctl04_ctl00"); time.sleep(6); _wait_render(fr); time.sleep(4)
         _export_excel(p, fr, out_month)
