@@ -78,9 +78,9 @@ footer{text-align:center;color:#8494a8;font-size:12px;margin:20px 0}/* ===== T�
 <body><div class="wrap">
 <header>
 <h1>DASHBOARD MTCL2026 &mdash; QUẢNG NGÃI</h1>
-<div class="sub">Chỉ tiêu chất lượng mạng lưới &bull; Type III.3 &bull; Kỳ báo cáo: 01/09 &ndash; 20/09/2026 (lũy kế tháng 09)</div>
+<div class="sub">Chỉ tiêu chất lượng mạng lưới &bull; Type III.3 &bull; Kỳ báo cáo: <span id="kyBc">—</span></div>
 <span class="badge">Nguồn: sMartF MobiFone + DS_MS online</span>
-<span class="badge" style="background:rgba(255,255,255,.28);font-weight:700">📅 Số liệu tính đến: __GENTS__</span>
+<span class="badge" style="background:rgba(255,255,255,.28);font-weight:700">📅 Số liệu tính đến: <span id="genTs">__GENTS__</span></span>
 <div style="margin-top:14px">
 <button id="btnUpdate" style="background:#fff;color:#0b3d91;border:none;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.18)">🔄 Cập nhật dữ liệu</button>
 </div>
@@ -94,7 +94,7 @@ footer{text-align:center;color:#8494a8;font-size:12px;margin:20px 0}/* ===== T�
 <div id="topcards" class="cards"></div>
 <div class="tabs">
 <button class="tab active" data-t="1">📈 KPI theo ngày</button>
-<button class="tab" data-t="2">📊 Lũy kế tháng 09</button>
+<button class="tab" data-t="2">📊 Lũy kế tháng <span class="jMonth">—</span></button>
 <button class="tab" data-t="3">📡 Báo cáo mất sóng</button>
 <button class="tab" data-t="4">🚫 Xã/phường chưa đạt</button>
 <button class="tab" data-t="5">📶 Cell 4G lưu lượng = 0</button>
@@ -112,7 +112,7 @@ footer{text-align:center;color:#8494a8;font-size:12px;margin:20px 0}/* ===== T�
 <div class="panel" id="p2">
 <div id="mmini" class="mini"></div>
 <div class="grid2">
-<div class="chartbox"><h3>Thành phần đánh giá lũy kế tháng 09</h3><div class="cw"><canvas id="cRadar"></canvas></div></div>
+<div class="chartbox"><h3>Thành phần đánh giá lũy kế tháng <span class="jMonth">—</span></h3><div class="cw"><canvas id="cRadar"></canvas></div></div>
 <div class="chartbox"><h3>So sánh với ngưỡng Type III.3</h3><div class="cw"><canvas id="cBar2"></canvas></div></div>
 </div>
 <div class="note" id="mnote"></div>
@@ -129,7 +129,7 @@ footer{text-align:center;color:#8494a8;font-size:12px;margin:20px 0}/* ===== T�
 <div class="scroll" style="max-height:220px"><table id="tOn"></table></div>
 <h2 class="sec" style="margin-top:18px">Chi tiết top trạm mất sóng nhiều</h2>
 <div class="scroll"><table id="tFreq"></table></div>
-<div class="note">Dữ liệu mất sóng lấy từ sheet <b>DS_MS online ngày</b> (Google Sheets) &bull; lọc tỉnh Quảng Ngãi &bull; ảnh chụp thời điểm 21/09/2026. Đơn vị thời gian: phút.</div>
+<div class="note">Dữ liệu mất sóng lấy từ sheet <b>DS_MS online ngày</b> (Google Sheets) &bull; lọc tỉnh Quảng Ngãi &bull; ảnh chụp thời điểm <span id="snapDate">—</span>. Đơn vị thời gian: phút.</div>
 </div>
 <div class="panel" id="p4">
 <div id="xamini" class="mini"></div>
@@ -137,7 +137,7 @@ footer{text-align:center;color:#8494a8;font-size:12px;margin:20px 0}/* ===== T�
 <div class="chartbox"><h3>Top xã/phường có MTCL_2026 thấp nhất</h3><div class="cw" style="height:340px"><canvas id="cXaFail"></canvas></div></div>
 <div class="chartbox"><h3>Thành phần HTMT trung bình (xã chưa đạt)</h3><div class="cw"><canvas id="cXaRadar"></canvas></div></div>
 </div>
-<h2 class="sec" style="margin-top:20px">🚫 Danh sách xã/phường CHƯA ĐẠT MTCL2026 &mdash; ngày <span id="xaDate">-</span></h2>
+<h2 class="sec" style="margin-top:20px">🚫 Danh sách xã/phường CHƯĀ ĐẠT MTCL2026 &mdash; ngày <span id="xaDate">-</span></h2>
 <div class="scroll"><table id="tXaFail"></table></div>
 <div class="note">Nguồn: sMartF &bull; MTCL &gt; 2026_V2 &gt; PHƯỜNG_XÃ &gt; NGÀY &bull; lọc tỉnh Quảng Ngãi, Đánh giá = KHÔNG ĐẠT &bull; số liệu của ngày liền trước.</div>
 </div>
@@ -157,4 +157,59 @@ footer{text-align:center;color:#8494a8;font-size:12px;margin:20px 0}/* ===== T�
 const D=__DATA__;
 </script>
 <script src="app.js"></script>
+<script>
+/* ===== Tự động lấy ĐÚNG kỳ báo cáo theo dữ liệu (không gõ cứng tháng) ===== */
+(function(){
+  function p2(n){return (n<10?'0':'')+n;}
+  var now=new Date();
+
+  // --- Xác định ngày/tháng/năm của KỲ BÁO CÁO từ chính dữ liệu ---
+  var dd=p2(now.getDate()), mm=p2(now.getMonth()+1), yy=now.getFullYear();
+  try{
+    var daily=(typeof D!=='undefined' && D && D.daily) ? D.daily : [];
+    if(daily.length){
+      // date trong dữ liệu có dạng "DD/MM"
+      var last=String(daily[daily.length-1].date||'').trim();
+      var q=last.split('/');
+      if(q.length>=2){ dd=p2(parseInt(q[0],10)); mm=p2(parseInt(q[1],10)); }
+    }
+    // Năm: lấy từ xa_date / cell4g_date (DD/MM/YYYY) nếu có, không thì năm hiện tại
+    var ds=String((D&&(D.xa_date||D.cell4g_date))||'');
+    var my=ds.match(/(\d{4})/);
+    if(my){ yy=my[1]; }
+  }catch(e){}
+
+  var snap=(D&&(D.xa_date||D.cell4g_date)) ? (D.xa_date||D.cell4g_date) : (dd+'/'+mm+'/'+yy);
+
+  // 1) Kỳ báo cáo: 01/MM – DD/MM/YYYY (lũy kế tháng MM)
+  var kb=document.getElementById('kyBc');
+  if(kb) kb.textContent='01/'+mm+' \u2013 '+dd+'/'+mm+'/'+yy+' (l\u0169y k\u1ebf th\u00e1ng '+mm+')';
+
+  // 2) Nhãn "tháng MM" ở tab + tiêu đề biểu đồ
+  document.querySelectorAll('.jMonth').forEach(function(el){ el.textContent=mm; });
+
+  // 3) Ảnh chụp thời điểm
+  var sd=document.getElementById('snapDate');
+  if(sd) sd.textContent=snap;
+
+  // 4) Dự phòng: nếu chỗ "Số liệu tính đến" chưa được công cụ điền (còn là biến mẫu),
+  //    thì hiển ngày giờ mở trang. Dùng chuỗi ghép để không bị thay nhầm khi build.
+  var needle='__'+'GENTS__';
+  var gt=document.getElementById('genTs');
+  if(gt && gt.textContent.indexOf(needle)>-1){
+    gt.textContent=dd+'/'+mm+'/'+yy+' '+p2(now.getHours())+':'+p2(now.getMinutes());
+  }
+
+  // 5) Câu nhận xét do app.js sinh ra (nếu còn "Lũy kế tháng NN/YYYY" cũ) → đổi theo dữ liệu
+  function fixMnote(){
+    var mn=document.getElementById('mnote');
+    if(mn && /[Ll]\u0169y k\u1ebf th\u00e1ng/.test(mn.innerHTML)){
+      mn.innerHTML=mn.innerHTML.replace(/([Ll]\u0169y k\u1ebf th\u00e1ng\s*)\d{1,2}(\/\d{2,4})?/, '$1'+mm+'/'+yy);
+    }
+  }
+  fixMnote();
+  window.addEventListener('load', fixMnote);
+  setTimeout(fixMnote, 400);
+})();
+</script>
 </body></html>
